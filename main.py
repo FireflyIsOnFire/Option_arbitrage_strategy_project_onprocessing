@@ -34,7 +34,10 @@ aapl_puts = df_puts
 
 getinfo = ['contractSymbol','strike','lastPrice','openInterest','impliedVolatility']
 op_data = aapl_calls[getinfo]
-print(op_data)
+#print(op_data)
+
+call = []
+put = []
 
 def call_option_Pricing(used_data, sp, r, std, tau):
     '''x[1]: strick price
@@ -48,30 +51,25 @@ def call_option_Pricing(used_data, sp, r, std, tau):
     d2 = d1 - std*np.sqrt(tau)
     c = norm.cdf(d1)*sp - norm.cdf(d2)*x[1]*np.exp(-r*tau)
     p = norm.cdf(-d2)*x[1]*np.exp(-r*tau) - norm.cdf(-d1)*sp
-    print(c, p)
+    #print(c, p)
+    call.append(c)
+    put.append(p)
     return c,p
-
-
 
 for i in range(len(op_data)):
      x = op_data.iloc[i,:]
      call_option_Pricing(x, sp, an_re, an_vo, tau)
 
-print(op_data['lastPrice'])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+strike_price = np.array(op_data['strike'])
+real_call_price = np.array(op_data['lastPrice'])
+#call
+plt.style.use('bmh')
+plt.figure(figsize = (8,5))
+plt.xlabel('Strike Price')
+plt.ylabel('Call price')
+plt.plot(strike_price, real_call_price, color = 'r', linewidth = 1, label = 'real call price')
+plt.plot(strike_price, call, color = 'b', linewidth = 1, label = 'BSM call price')
+plt.legend()
+plt.show()
 
