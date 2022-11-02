@@ -35,8 +35,6 @@ aapl_puts = df_puts
 getinfo = ['contractSymbol','strike','lastPrice','openInterest','impliedVolatility']
 op_data = aapl_calls[getinfo]
 print(op_data)
-x = op_data.iloc[4, :]
-print(x)
 
 def call_option_Pricing(used_data, sp, r, std, tau):
     '''x[1]: strick price
@@ -53,8 +51,13 @@ def call_option_Pricing(used_data, sp, r, std, tau):
     print(c, p)
     return c,p
 
-call_option_Pricing(x,sp,an_re,an_vo,tau)
 
+
+for i in range(len(op_data)):
+     x = op_data.iloc[i,:]
+     call_option_Pricing(x, sp, an_re, an_vo, tau)
+
+print(op_data['lastPrice'])
 
 
 
