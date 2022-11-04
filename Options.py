@@ -4,8 +4,7 @@ import pandas as pd
 import pandas_datareader.data as web
 import yfinance as yf
 from scipy.stats import norm
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 
 pd.set_option('display.max_columns',None)
 
@@ -52,7 +51,6 @@ class Options():
         getinfo = ['contractSymbol', 'strike', 'lastPrice', 'openInterest', 'impliedVolatility']
         x = aapl_calls[getinfo]
         x.to_csv('op_data')
-        #print(x)
         call = []
         put = []
         #print(sp, self.re, self.tau,self.vol, x.iloc[:,1])
@@ -65,18 +63,26 @@ class Options():
             p = norm.cdf(-d2) * x.iloc[i, 1] * np.exp(-self.re * ((self.tau)/365)) - norm.cdf(-d1) * sp
             call.append(c)
             put.append(p)
-            print('Price: ',sp, 'Strike:',x.iloc[i,1], 'TTM: ',self.tau,'Call: ',c,'ImVola:',x.iloc[i,4],'Real call:',x.iloc[i,2])
+            #print('Price: ',sp, 'Strike:',x.iloc[i,1], 'TTM: ',self.tau,'Call: ',c,'ImVola:',x.iloc[i,4],'Real call:',x.iloc[i,2])
         return c, p, call, put
 
     def Greeks(self):
-        x = pd.read_csv('op_data')
+        call_delta = []
+        put_delta = []
+        gamma = []
+        x = pd.read_csv('op_data').iloc[:,2:]
+        x = pd.DataFrame(x)
+        #print(x.info, x.iloc[0,0])
         for i in range(len(x)):
-            d1 = (np.log(sp / x.iloc[i, 1]) + (self.re + 0.5 * self.vol ** 2) * (self.tau) / 365) / (
-                    self.vol * np.sqrt((self.tau) / 365))
-            call_delta = norm.cdf(d1)
-            put_delta = call_delta - 1
+            d1 = (np.log(sp / x.iloc[i, 0]) + (self.re + 0.5 * self.vol ** 2) * (self.tau) / 365) / (
+                    self.vol * np.sqrt((self.tau)/365))
+            c = norm.cdf(d1)
+            p = c - 1
+            call_delta.append(c)
+            put_delta.append(p)
+            g =( (1 / np.sqrt(2 * 3.1415926)) * np.exp(-(d1 ** 2) / 2) )/(sp * self.vol * np.sqrt((self.tau)/365))
+            gamma.append(g)
 
-            gamma =( (1 / np.sqrt(2 * 3.1415926)) * np.exp(-(d1 ** 2) / 2) )/(sp * self.vol * np.sqrt(self.tau/365))
 
 
         return call_delta, put_delta, gamma

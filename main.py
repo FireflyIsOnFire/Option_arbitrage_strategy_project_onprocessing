@@ -59,6 +59,7 @@ plt.ylabel('Call price')
 plt.plot(strike_price, real_call_price, color = 'r', linewidth = 1, label = 'trading call price')
 plt.plot(strike_price, BSMcall, color = 'b', linewidth = 1, label = 'BSM call price')
 plt.legend()
+plt.show()
 
 call_delta = option.Greeks()[0]
 put_delta = option.Greeks()[1]
@@ -67,8 +68,10 @@ plt.title('Option Delta')
 plt.xlabel('Strike price')
 plt.ylabel('Delta')
 plt.plot(strike_price,call_delta, color = 'b', linewidth = 1, label = 'Call Delta')
-plt.plot(strike_price,put_delta, color = 'w', linewidth = 1, label = 'Put Delta')
+plt.plot(strike_price,put_delta, color = 'g', linewidth = 1, label = 'Put Delta')
 plt.legend()
+plt.show()
 
+plt.title('Option Gamma')
 plt.plot(strike_price, gamma, color = 'r', linewidth = 1, label = 'Gamma')
 plt.show()
