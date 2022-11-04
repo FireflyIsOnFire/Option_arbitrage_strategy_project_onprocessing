@@ -10,7 +10,7 @@ import seaborn as sns
 pd.set_option('display.max_columns',None)
 
 
-start = datetime.datetime(2021,11,1)
+start = datetime.datetime(2019,1,1)
 end = datetime.datetime.today()
 df = web.DataReader('AAPl','yahoo',start,end)['Adj Close']
 df.to_csv('df')
@@ -52,10 +52,10 @@ class Options():
         getinfo = ['contractSymbol', 'strike', 'lastPrice', 'openInterest', 'impliedVolatility']
         x = aapl_calls[getinfo]
         x.to_csv('op_data')
-        print(x)
+        #print(x)
         call = []
         put = []
-        print(sp, self.re, self.tau,self.vol, x.iloc[:,1])
+        #print(sp, self.re, self.tau,self.vol, x.iloc[:,1])
         for i in range(len(x)):
             d1 = (np.log(sp / x.iloc[i, 1]) + (self.re + 0.5 * self.vol ** 2) * (self.tau)/365) / (
                         self.vol * np.sqrt((self.tau)/365))
@@ -68,7 +68,19 @@ class Options():
             print('Price: ',sp, 'Strike:',x.iloc[i,1], 'TTM: ',self.tau,'Call: ',c,'ImVola:',x.iloc[i,4],'Real call:',x.iloc[i,2])
         return c, p, call, put
 
-'''    aapl_calls = pd.read_csv('AAPL_calls')
-    aapl_puts = pd.read_csv('AAPL_puts')
-    getinfo = ['contractSymbol', 'strike', 'lastPrice', 'openInterest', 'impliedVolatility']
-    x = aapl_calls[getinfo]'''
+    def Greeks(self):
+        x = pd.read_csv('op_data')
+        for i in range(len(x)):
+            d1 = (np.log(sp / x.iloc[i, 1]) + (self.re + 0.5 * self.vol ** 2) * (self.tau) / 365) / (
+                    self.vol * np.sqrt((self.tau) / 365))
+            call_delta = norm.cdf(d1)
+            put_delta = call_delta - 1
+
+            gamma =( (1 / np.sqrt(2 * 3.1415926)) * np.exp(-(d1 ** 2) / 2) )/(sp * self.vol * np.sqrt(self.tau/365))
+
+
+        return call_delta, put_delta, gamma
+
+
+
+

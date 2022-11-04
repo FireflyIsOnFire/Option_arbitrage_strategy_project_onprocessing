@@ -47,15 +47,28 @@ option = Options(1,tau0)
 BSMcall = option.BSM()[2]
 strike_price = pd.read_csv('op_data').iloc[:,2]
 real_call_price = pd.read_csv('op_data').iloc[:,3]
-print(BSMcall,real_call_price,strike_price)
+#print(BSMcall,real_call_price,strike_price)
 
 
 
 plt.style.use('bmh')
 plt.figure(figsize = (8,5))
+plt.title('BSM option price vs trading option price')
 plt.xlabel('Strike Price')
 plt.ylabel('Call price')
-plt.plot(strike_price, real_call_price, color = 'r', linewidth = 1, label = 'real call price')
+plt.plot(strike_price, real_call_price, color = 'r', linewidth = 1, label = 'trading call price')
 plt.plot(strike_price, BSMcall, color = 'b', linewidth = 1, label = 'BSM call price')
 plt.legend()
+
+call_delta = option.Greeks()[0]
+put_delta = option.Greeks()[1]
+gamma = option.Greeks()[2]
+plt.title('Option Delta')
+plt.xlabel('Strike price')
+plt.ylabel('Delta')
+plt.plot(strike_price,call_delta, color = 'b', linewidth = 1, label = 'Call Delta')
+plt.plot(strike_price,put_delta, color = 'w', linewidth = 1, label = 'Put Delta')
+plt.legend()
+
+plt.plot(strike_price, gamma, color = 'r', linewidth = 1, label = 'Gamma')
 plt.show()
