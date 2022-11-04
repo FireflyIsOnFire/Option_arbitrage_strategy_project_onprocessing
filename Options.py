@@ -40,15 +40,6 @@ class Options():
         # tau: rest option horizon
         aapl = yf.Ticker("AAPL")
         self.ex_date = ex_date
-        #print(self.ex_date) 是1没错
-        # 0: 2022,11,4
-        # 1: 2022,11,11
-        # 2: 2022,11,18
-        # 3: 2022,11,25
-        # 4: 2022,12,2
-        # 5: 2022,12,9
-        # 6: 2022,12,16
-        # 7: 2023,1,20
         self.tau = tau
 
     def BSM(self):
@@ -61,16 +52,17 @@ class Options():
         getinfo = ['contractSymbol', 'strike', 'lastPrice', 'openInterest', 'impliedVolatility']
         x = aapl_calls[getinfo]
         x.to_csv('op_data')
-        #print(x)
+        print(x)
         call = []
         put = []
+        print(sp, self.re, self.tau,self.vol, x.iloc[:,1])
         for i in range(len(x)):
-            d1 = (np.log(sp / x.iloc[i, 1]) + (self.re + 0.5 * self.vol ** 2) * self.tau) / (
-                        self.vol * np.sqrt(self.tau))
+            d1 = (np.log(sp / x.iloc[i, 1]) + (self.re + 0.5 * self.vol ** 2) * (self.tau)/365) / (
+                        self.vol * np.sqrt((self.tau)/365))
             #print(sp, x.iloc[i,1], self.vol, self.tau)
-            d2 = d1 - self.vol * np.sqrt(self.tau)
-            c = norm.cdf(d1) * sp - norm.cdf(d2) * x.iloc[i, 1] * np.exp(-self.re * self.tau)
-            p = norm.cdf(-d2) * x.iloc[i, 1] * np.exp(-self.re * self.tau) - norm.cdf(-d1) * sp
+            d2 = d1 - self.vol * np.sqrt((self.tau)/365)
+            c = norm.cdf(d1) * sp - norm.cdf(d2) * x.iloc[i, 1] * np.exp(-self.re * ((self.tau)/365))
+            p = norm.cdf(-d2) * x.iloc[i, 1] * np.exp(-self.re * ((self.tau)/365)) - norm.cdf(-d1) * sp
             call.append(c)
             put.append(p)
             print('Price: ',sp, 'Strike:',x.iloc[i,1], 'TTM: ',self.tau,'Call: ',c,'ImVola:',x.iloc[i,4],'Real call:',x.iloc[i,2])
