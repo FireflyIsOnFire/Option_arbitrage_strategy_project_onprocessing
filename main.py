@@ -2,27 +2,22 @@ import datetime
 import numpy as np
 import pandas as pd
 import pandas_datareader.data as web
-from pandas_datareader import Options
 import yfinance as yf
 import scipy.optimize as opt
 from scipy.optimize import curve_fit
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 import seaborn as sns
+from Options import Options
 
 pd.set_option('display.max_columns',None)
-
 
 start = datetime.datetime(2021,11,1)
 end = datetime.datetime.today()
 df = web.DataReader('AAPl','yahoo',start,end)['Adj Close']
+df.to_csv('df')
 sp = df[-1]
-log_re = np.log(df/df.shift(1))
-#print(log_re[-243:-1])  #length: 252 trading days/year
-an_re = np.log(1.0414) #risk free rate of 1Y bonds in usa (2022,11)
-an_vo = log_re.std() #standard deviation of the stock's returns: 0.021283883795994305
-'''aapl = yf.Ticker("AAPL")
-df_calls, df_puts = aapl.option_chain(aapl.options[1])
+
 # 0: 2022,11,4
 # 1: 2022,11,11
 # 2: 2022,11,18
@@ -31,68 +26,9 @@ df_calls, df_puts = aapl.option_chain(aapl.options[1])
 # 5: 2022,12,9
 # 6: 2022,12,16
 # 7: 2023,1,20
+# need to calculate tau manually !!!!!!
 
-df_calls.to_csv('AAPL_calls')
-df_puts.to_csv('AAPL_puts')
-aapl_calls = df_calls
-aapl_puts = df_puts
-
-getinfo = ['contractSymbol', 'strike', 'lastPrice', 'openInterest', 'impliedVolatility']
-x = aapl_calls[getinfo]
-print(x)
-'''
-
-
-class Options():
-
-    def __init__(self, ex_date ,sp, strike, vol, re, tau):
-        # x[1]: strike price
-        # x[2]: real call price
-        # x[4]: implied volatility
-        # re: log annual return
-        # vol: annual standard erro of log return
-        # tau: rest option horizon
-        aapl = yf.Ticker("AAPL")
-        self.ex_date = ex_date
-        #print(self.ex_date) 是1没错
-        # 0: 2022,11,4
-        # 1: 2022,11,11
-        # 2: 2022,11,18
-        # 3: 2022,11,25
-        # 4: 2022,12,2
-        # 5: 2022,12,9
-        # 6: 2022,12,16
-        # 7: 2023,1,20
-        self.sp = sp
-        self.strike = strike
-        self.vol = vol
-        self.re = re
-        self.tau = tau
-
-    def BSM(self):
-        aapl = yf.Ticker("AAPL")
-        df_calls, df_puts = aapl.option_chain(aapl.options[self.ex_date])
-        df_calls.to_csv('AAPL_calls')
-        df_puts.to_csv('AAPL_puts')
-        aapl_calls = df_calls
-        aapl_puts = df_puts
-        getinfo = ['contractSymbol', 'strike', 'lastPrice', 'openInterest', 'impliedVolatility']
-        x = aapl_calls[getinfo]
-        print(x)
-        call = []
-        put = []
-        for i in range(len(x)):
-            d1 = (np.log(sp / x.iloc[i, 1]) + (self.re + 0.5 * self.vol ** 2) * self.tau) / (
-                        self.vol * np.sqrt(self.tau))
-            d2 = d1 - self.vol * np.sqrt(self.tau)
-            c = norm.cdf(d1) * sp - norm.cdf(d2) * x.iloc[i, 1] * np.exp(-self.re * self.tau)
-            p = norm.cdf(-d2) * x.iloc[i, 1] * np.exp(-self.re * self.tau) - norm.cdf(-d1) * sp
-            call.append(c)
-            put.append(p)
-        return c, p
-
-
-option = Options(1,1,1,1,1,1)
+option = Options(1,7)
 option.BSM()
 
 
