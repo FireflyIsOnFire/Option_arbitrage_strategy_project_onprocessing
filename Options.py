@@ -15,16 +15,7 @@ end = datetime.datetime.today()
 df = web.DataReader('AAPl','yahoo',start,end)['Adj Close']
 df.to_csv('df')
 sp = df[-1]
-print(sp)
-# 0: 2022,11,4
-# 1: 2022,11,11
-# 2: 2022,11,18
-# 3: 2022,11,25
-# 4: 2022,12,2
-# 5: 2022,12,9
-# 6: 2022,12,16
-# 7: 2023,1,20
-# need to calculate tau manually !!!!!!
+
 class Options():
     # 0: 2022,11,4
     # 1: 2022,11,11
@@ -69,10 +60,9 @@ class Options():
         aapl_puts = df_puts
         getinfo = ['contractSymbol', 'strike', 'lastPrice', 'openInterest', 'impliedVolatility']
         x = aapl_calls[getinfo]
-        #print(x)
+        print(x)
         call = []
         put = []
-        print('call option price:','put option price:')
         for i in range(len(x)):
             d1 = (np.log(sp / x.iloc[i, 1]) + (self.re + 0.5 * self.vol ** 2) * self.tau) / (
                         self.vol * np.sqrt(self.tau))
@@ -82,10 +72,10 @@ class Options():
             p = norm.cdf(-d2) * x.iloc[i, 1] * np.exp(-self.re * self.tau) - norm.cdf(-d1) * sp
             call.append(c)
             put.append(p)
-            print(c,p)
+            print('Price: ',sp, 'Strike:',x.iloc[i,1], 'TTM: ',self.tau,'Call: ',c,'ImVola:',x.iloc[i,4],'Real call:',x.iloc[i,2])
         return c, p
 
-    aapl_calls = pd.read_csv('AAPL_calls')
+'''    aapl_calls = pd.read_csv('AAPL_calls')
     aapl_puts = pd.read_csv('AAPL_puts')
     getinfo = ['contractSymbol', 'strike', 'lastPrice', 'openInterest', 'impliedVolatility']
-    x = aapl_calls[getinfo]
+    x = aapl_calls[getinfo]'''
