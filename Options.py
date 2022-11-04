@@ -60,7 +60,8 @@ class Options():
         aapl_puts = df_puts
         getinfo = ['contractSymbol', 'strike', 'lastPrice', 'openInterest', 'impliedVolatility']
         x = aapl_calls[getinfo]
-        print(x)
+        x.to_csv('op_data')
+        #print(x)
         call = []
         put = []
         for i in range(len(x)):
@@ -73,7 +74,7 @@ class Options():
             call.append(c)
             put.append(p)
             print('Price: ',sp, 'Strike:',x.iloc[i,1], 'TTM: ',self.tau,'Call: ',c,'ImVola:',x.iloc[i,4],'Real call:',x.iloc[i,2])
-        return c, p
+        return c, p, call, put
 
 '''    aapl_calls = pd.read_csv('AAPL_calls')
     aapl_puts = pd.read_csv('AAPL_puts')
