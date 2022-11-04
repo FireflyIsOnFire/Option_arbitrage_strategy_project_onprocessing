@@ -67,11 +67,20 @@ class Options():
         return c, p, call, put
 
     def Greeks(self):
+        aapl = yf.Ticker("AAPL")
+        df_calls, df_puts = aapl.option_chain(aapl.options[self.ex_date])
+        df_calls.to_csv('AAPL_calls')
+        df_puts.to_csv('AAPL_puts')
+        aapl_calls = df_calls
+        aapl_puts = df_puts
+        getinfo = ['contractSymbol', 'strike', 'lastPrice', 'openInterest', 'impliedVolatility']
+        x = aapl_calls[getinfo]
+        x.to_csv('op_data')
         call_delta = []
         put_delta = []
         gamma = []
-        x = pd.read_csv('op_data').iloc[:,2:]
-        x = pd.DataFrame(x)
+        x = x.iloc[:,1:]
+        #print(x.info)
         #print(x.info, x.iloc[0,0])
         for i in range(len(x)):
             d1 = (np.log(sp / x.iloc[i, 0]) + (self.re + 0.5 * self.vol ** 2) * (self.tau) / 365) / (
@@ -82,9 +91,6 @@ class Options():
             put_delta.append(p)
             g =( (1 / np.sqrt(2 * 3.1415926)) * np.exp(-(d1 ** 2) / 2) )/(sp * self.vol * np.sqrt((self.tau)/365))
             gamma.append(g)
-
-
-
         return call_delta, put_delta, gamma
 
 
