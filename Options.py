@@ -6,14 +6,8 @@ import yfinance as yf
 from scipy.stats import norm
 
 
-pd.set_option('display.max_columns',None)
-
-
-start = datetime.datetime(2019,1,1)
-end = datetime.datetime.today()
-df = web.DataReader('AAPl','yahoo',start,end)['Adj Close']
-df.to_csv('df')
-sp = df[-1]
+df = pd.read_csv('AAPL')['Adj Close']
+sp = np.array(df)[-1]
 
 class Options():
     # 0: 2022,11,4
@@ -24,7 +18,6 @@ class Options():
     # 5: 2022,12,9
     # 6: 2022,12,16
     # 7: 2023,1,20
-    df = pd.read_csv('AAPL')['Adj Close']
     log_re = np.log(df / df.shift(1))
     log_re = log_re[-243:-1]  #length: 252 trading days/year
     re = np.log(1.0414)  # risk free rate of 1Y bonds in usa (2022,11)
@@ -37,7 +30,6 @@ class Options():
         # re: log annual return
         # vol: annual standard erro of log return
         # tau: rest option horizon
-        aapl = yf.Ticker("AAPL")
         self.ex_date = ex_date
         self.tau = tau
 
